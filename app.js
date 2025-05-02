@@ -39,12 +39,8 @@ app.post("/register/", async (request, response) => {
   const dbUser = await db.get(selectUserQuery);
 
   if (dbUser === undefined) {
-    response.status(400);
-    response.send("User already exists");
-  } else {
-    const passwordLength = password.length() < 5;
     const hashedPassword = await bcrypt.hash(password, 10);
-    if (passwordLength === true) {
+    if (password.length < 5) {
       response.status(400);
       response.send("Password is too short");
     } else {
@@ -53,5 +49,8 @@ app.post("/register/", async (request, response) => {
       await db.run(postUserQuery);
       response.send("User created successfully");
     }
+  } else {
+    response.status(400);
+    response.send("User already exists");
   }
 });
